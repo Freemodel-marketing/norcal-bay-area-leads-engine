@@ -10,7 +10,7 @@ SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
 RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
 
 # Validación simple para asegurarnos de que las llaves existen
-if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
+if not all([SUPABASE_URL, SUPABASE_ANON_KEY, RENTCAST_API_KEY]):
     raise ValueError("❌ Faltan llaves de API en las variables de entorno.")
 
 
