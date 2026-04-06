@@ -2,19 +2,20 @@ name: Actualizacion Diaria de Leads
 
 on:
   schedule:
-    # Corre a las 8:00 AM UTC (aprox 1:00 AM en California)
     - cron: '0 8 * * *'
-  workflow_dispatch: # Permite ejecutarlo manualmente con un botón
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Actualizado de v3 a v4
       - name: Descargar codigo del repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # Actualizado de v4 a v5
       - name: Configurar Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -23,9 +24,7 @@ jobs:
 
       - name: Ejecutar script de extraccion
         env:
-          # Conecta los Secrets de GitHub con el código Python
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           RENTCAST_API_KEY: ${{ secrets.RENTCAST_API_KEY }}
-        # IMPORTANTE: El nombre del archivo debe ser el actual
         run: python Sale_Listings_2_0.py
