@@ -9,8 +9,16 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
 
+# ESTA LÍNEA ES PARA DIAGNÓSTICO
+if SUPABASE_KEY:
+    print(f"✅ La llave fue recibida y tiene {len(SUPABASE_KEY)} caracteres.")
+else:
+    print("❌ La llave llegó VACÍA desde GitHub.")
+
+# ... resto del código ...
+
 # Validación simple para asegurarnos de que las llaves existen
-if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
+"""if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
     raise ValueError("❌ Faltan llaves de API en las variables de entorno.")
 
 
@@ -65,7 +73,7 @@ def process_listings():
                 except Exception as e:
                     print(f"❌ Error al subir a Supabase: {e}")
         else:
-            print(f"❌ Error API: {response.status_code} - {response.text}")
+            print(f"❌ Error API: {response.status_code} - {response.text}") """
 
         time.sleep(5)
 
