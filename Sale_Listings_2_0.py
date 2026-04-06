@@ -48,7 +48,7 @@ def process_listings():
 
             # --- LLAMADA A FUNCIÓN SEGREGADA (JSON LOCAL) ---
             # Puedes comentar esta línea cuando ya no necesites el archivo local
-            save_local_backups(data, status, city)
+            # save_local_backups(data, status, city)
 
             # Limpiar y aplanar los datos para Supabase
             clean_data = map_data_for_supabase(data)
