@@ -11,7 +11,7 @@ RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
 
 # ESTA LÍNEA ES PARA DIAGNÓSTICO
 if SUPABASE_KEY:
-    print(f"✅ La llave fue recibida y tiene {len(SUPABASE_KEY)} caracteres.")
+    print(f"✅ La llave fue recibida y es {SUPABASE_KEY} caracteres.")
 else:
     print("❌ La llave llegó VACÍA desde GitHub.")
 
@@ -78,4 +78,5 @@ def process_listings():
         time.sleep(5) """
 
 if __name__ == "__main__":
-    process_listings()
+    pass
+    #process_listings()
