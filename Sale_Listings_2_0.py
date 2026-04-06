@@ -14,7 +14,7 @@ if not all([SUPABASE_URL, SUPABASE_ANON_KEY, RENTCAST_API_KEY]):
     raise ValueError("❌ Faltan llaves de API en las variables de entorno.")
 
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 # Configuración de búsqueda
 cities = ["San%20Mateo"]
