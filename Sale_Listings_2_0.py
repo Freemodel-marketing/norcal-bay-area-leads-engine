@@ -5,22 +5,9 @@ from supabase import create_client, Client
 from utils import *
 
 # 1. Configuración de Supabase (Usa variables de entorno para seguridad)
-#SUPABASE_URL = os.environ.get("SUPABASE_URL")
-#SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-#RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
-
-SUPABASE_URL = "https://bwnayhlmbmqaejnultnv.supabase.co"
-SUPABASE_KEY = "sb_publishable_wKb37bYCu3Rf23oeEwXhlQ_pGycz85a"
-RENTCAST_API_KEY = "51cf165295fd49ac8f6735a27419e83c"
-
-
-# ESTA LÍNEA ES PARA DIAGNÓSTICO
-if SUPABASE_KEY:
-    print(f"✅ La llave fue recibida y es {SUPABASE_KEY}.")
-else:
-    print("❌ La llave llegó VACÍA desde GitHub.")
-
-# ... resto del código ...
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
 
 # Validación simple para asegurarnos de que las llaves existen
 if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
@@ -30,7 +17,7 @@ if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Configuración de búsqueda
-cities = ["San%20Mateo"]
+cities = ["San%20Mateo", "Santa20%Clara", "San20%Rafael", "Walnut20%Creek"]
 status = "Active"
 daysOld = "30:90" # Days on market
 offset = 0
@@ -74,9 +61,9 @@ def process_listings():
                     # Ajustamos los datos para que coincidan con tus columnas de Supabase
                     # Nota: Asegúrate que los nombres de campos en Supabase coincidan con el JSON
                     supabase.table("leads_ventas").upsert(clean_data).execute()
-                    print(f"✅ ¡Datos sincronizados con éxito en la nube!")
+                    print(f"✅ ¡Datos de {city} sincronizados con éxito en la nube!")
                 except Exception as e:
-                    print(f"❌ Error al subir a Supabase: {e}")
+                    print(f"❌ Error al subir datos de {city} a Supabase: {e}")
         else:
             print(f"❌ Error API: {response.status_code} - {response.text}") 
 
