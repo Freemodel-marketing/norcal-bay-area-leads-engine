@@ -6,7 +6,7 @@ from utils import *
 
 # 1. Configuración de Supabase (Usa variables de entorno para seguridad)
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_ANON_KEY")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
 RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
 
 # Validación simple para asegurarnos de que las llaves existen
