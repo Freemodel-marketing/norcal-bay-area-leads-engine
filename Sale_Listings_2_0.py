@@ -5,20 +5,22 @@ from supabase import create_client, Client
 from utils import *
 
 # 1. Configuración de Supabase (Usa variables de entorno para seguridad)
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+#SUPABASE_URL = os.environ.get("SUPABASE_URL")
+#SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+SUPABASE_URL = "https://bwnayhlmbmqaejnultnv.supabase.co"
+SUPABASE_KEY = "sb_publishable_wKb37bYCu3Rf23oeEwXhlQ_pGycz85a"
 RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
 
 # ESTA LÍNEA ES PARA DIAGNÓSTICO
 if SUPABASE_KEY:
-    print(f"✅ La llave fue recibida y es {SUPABASE_KEY} caracteres.")
+    print(f"✅ La llave fue recibida y es {SUPABASE_KEY}.")
 else:
     print("❌ La llave llegó VACÍA desde GitHub.")
 
 # ... resto del código ...
 
 # Validación simple para asegurarnos de que las llaves existen
-"""if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
+if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
     raise ValueError("❌ Faltan llaves de API en las variables de entorno.")
 
 
@@ -75,8 +77,7 @@ def process_listings():
         else:
             print(f"❌ Error API: {response.status_code} - {response.text}") 
 
-        time.sleep(5) """
+        time.sleep(5)
 
 if __name__ == "__main__":
-    pass
-    #process_listings()
+    process_listings()
