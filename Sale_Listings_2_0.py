@@ -7,9 +7,12 @@ from utils import *
 # 1. Configuración de Supabase (Usa variables de entorno para seguridad)
 #SUPABASE_URL = os.environ.get("SUPABASE_URL")
 #SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+#RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
+
 SUPABASE_URL = "https://bwnayhlmbmqaejnultnv.supabase.co"
 SUPABASE_KEY = "sb_publishable_wKb37bYCu3Rf23oeEwXhlQ_pGycz85a"
-RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
+RENTCAST_API_KEY = "51cf165295fd49ac8f6735a27419e83c"
+
 
 # ESTA LÍNEA ES PARA DIAGNÓSTICO
 if SUPABASE_KEY:
