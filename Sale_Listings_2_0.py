@@ -73,9 +73,9 @@ def process_listings():
                 except Exception as e:
                     print(f"❌ Error al subir a Supabase: {e}")
         else:
-            print(f"❌ Error API: {response.status_code} - {response.text}") """
+            print(f"❌ Error API: {response.status_code} - {response.text}") 
 
-        time.sleep(5)
+        time.sleep(5) """
 
 if __name__ == "__main__":
     process_listings()
