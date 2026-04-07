@@ -17,7 +17,7 @@ if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Configuración de búsqueda
-cities = ["San%20Mateo", "Santa20%Clara", "San20%Rafael", "Walnut20%Creek"]
+cities = ["Santa20%Clara", "San20%Rafael", "Walnut20%Creek"]
 status = "Active"
 daysOld = "30:90" # Days on market
 offset = 0
