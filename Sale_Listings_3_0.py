@@ -30,7 +30,7 @@ def fetch_and_store_ids():
 
     for county in counties:
         payload = {
-            "size": 250,
+            "size": 50,
             "county": county,
             "state": "CA",
             "mls_days_on_market_min": 90,
