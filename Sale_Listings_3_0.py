@@ -94,7 +94,7 @@ def fetch_and_store_ids():
                             lead["agent_office"] = latest.get("agentOffice")
                     
                     # Pausa pequeña para no saturar la API en el bucle interno
-                    time.sleep(5) 
+                    time.sleep(0.5) 
                 except Exception as e:
                     print(f"⚠️ Error enriqueciendo ID {prop_id}: {e}")
 
@@ -109,7 +109,7 @@ def fetch_and_store_ids():
         else:
             print(f"❌ Error en {county}: {response.status_code}")
         
-        time.sleep(10) # Pausa entre condados
+        time.sleep(3) # Pausa entre condados
 
 if __name__ == "__main__":
     fetch_and_store_ids()
