@@ -94,7 +94,7 @@ def fetch_and_store_ids():
                             lead["agent_office"] = latest.get("agentOffice")
                     
                     # Pausa pequeña para no saturar la API en el bucle interno
-                    time.sleep(1) 
+                    time.sleep(5) 
                 except Exception as e:
                     print(f"⚠️ Error enriqueciendo ID {prop_id}: {e}")
 
