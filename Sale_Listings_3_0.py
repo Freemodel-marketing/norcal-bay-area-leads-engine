@@ -14,10 +14,12 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 SEARCH_URL = "https://api.realestateapi.com/v2/PropertySearch"
 DETAIL_URL = "https://api.realestateapi.com/v2/PropertyDetail"
 
-counties = [
+"""counties = [
     "San%20Francisco", "San%20Mateo", "Santa%20Clara", "Santa%20Cruz",
     "Monterey", "Alameda", "Contra%20Costa", "Napa", "Sonoma", "Marin"
-]
+]"""
+
+counties = ["San%20Francisco", "San%20Mateo"]
 
 def fetch_and_store_ids():
     
