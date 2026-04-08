@@ -20,6 +20,9 @@ counties = [
 ]
 
 def fetch_and_store_ids():
+    
+    print("ESTOY VIVO")
+    
     headers = {
         "accept": "application/json",
         "x-user-id": "UniqueUserIdentifier",
