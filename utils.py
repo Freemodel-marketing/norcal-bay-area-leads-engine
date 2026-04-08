@@ -25,3 +25,25 @@ def split_agent_name(full_name):
     # Regla: Todo al First Name
     else:
         return full_name, ""
+
+def filter_by_county(raw_data_list, target_county):
+    """
+    Filtra la lista cruda de la API para mantener solo los que coinciden con el target.
+    """
+    filtered_leads = []
+    # Limpiamos el target: "San%20Mateo" -> "san mateo"
+    target_clean = target_county.replace("%20", " ").lower().strip()
+    
+    for item in raw_data_list:
+        # Buscamos el condado dentro del objeto address de la API
+        lead_county = item.get('address', {}).get('county', '')
+        
+        if lead_county:
+            # Limpiamos el valor de la API: "San Mateo County" -> "san mateo"
+            lead_county_clean = lead_county.lower().replace("county", "").strip()
+            
+            # Verificamos si hay coincidencia
+            if target_clean in lead_county_clean or lead_county_clean in target_clean:
+                filtered_leads.append(item)
+                
+    return filtered_leads
