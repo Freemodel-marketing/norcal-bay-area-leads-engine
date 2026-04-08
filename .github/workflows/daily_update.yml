@@ -16,7 +16,7 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.13.3'
 
       - name: Instalar dependencias
         run: |
@@ -28,4 +28,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           RE_API_KEY: ${{ secrets.RE_API_KEY }}
-        run: python Sale_Listings_2_0.py
+        run: python Sale_Listings_3_0.py
