@@ -34,6 +34,7 @@ def fetch_and_store_ids():
             "county": county,
             "state": "CA",
             "mls_days_on_market_min": 90,
+            "mls_days_on_market_max": 365,
             "mls_active": True,
             "and": [
                         {
