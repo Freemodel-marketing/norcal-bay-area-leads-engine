@@ -71,7 +71,7 @@
                         <tr class="table-header text-slate-600 uppercase text-xs font-bold">
                             <th class="p-5">Address</th>
                             <th class="p-5">Price</th>
-                            <th class="p-5">County</th>
+                            <th class="p-5">Property Use</th>
                             <th class="p-5 text-center">Days on Market</th>
                             <th class="p-5">Listing Agent</th>
                             <th class="p-5">Contact Details</th>
@@ -90,7 +90,7 @@
         const SUPABASE_KEY = 'sb_publishable_wKb37bYCu3Rf23oeEwXhlQ_pGycz85a';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentData = []; // Variable global para guardar los datos filtrados
+        let currentData = [];
 
         async function fetchLeads() {
             const tableBody = document.getElementById('leadsTableBody');
@@ -101,66 +101,86 @@
             tableBody.innerHTML = '<tr><td colspan="7" class="p-20 text-center text-slate-400 font-medium">Fetching fresh leads...</td></tr>';
 
             let query = _supabase.from('leads_ventas').select('*');
+            
             if (county) query = query.eq('county', county);
-            if (search) query = query.or(`agent_name.ilike.%${search}%,address.ilike.%${search}%,office_name.ilike.%${search}%`);
+            
+            if (search) {
+                // Actualizado para buscar en los nuevos campos de nombre
+                query = query.or(`agent_first_name.ilike.%${search}%,agent_last_name.ilike.%${search}%,address.ilike.%${search}%,agent_office.ilike.%${search}%`);
+            }
+            
             query = query.order('days_on_market', { ascending: false });
 
             const { data, error } = await query;
             if (error) { tableBody.innerHTML = 'Error loading data'; return; }
 
-            currentData = data; // Guardamos los datos para el CSV
+            currentData = data;
             counter.innerText = `${data.length} Properties Identified`;
             tableBody.innerHTML = '';
 
             data.forEach(lead => {
+                // Combinamos nombres para mostrar
+                const fullName = `${lead.agent_first_name || ''} ${lead.agent_last_name || ''}`.trim() || 'N/A';
+                
                 const row = `
                     <tr class="bg-white">
-                        <td class="p-5 font-semibold text-slate-800">${lead.address || 'N/A'}</td>
+                        <td class="p-5 font-semibold text-slate-800">
+                            ${lead.address || 'N/A'}<br>
+                            <span class="text-xs text-slate-400 font-normal uppercase">${lead.city || ''}, ${lead.county || ''}</span>
+                        </td>
                         <td class="p-5 text-blue-700 font-bold">$${Number(lead.price).toLocaleString()}</td>
-                        <td class="p-5 text-slate-500 uppercase text-xs font-medium">${lead.county || 'N/A'}</td>
+                        <td class="p-5 text-slate-500 text-xs">
+                            <span class="block font-bold text-slate-700">${lead.property_type || 'N/A'}</span>
+                            ${lead.property_use || ''}
+                        </td>
                         <td class="p-5 text-center">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${lead.days_on_market > 30 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">
                                 ${lead.days_on_market || 0} Days
                             </span>
                         </td>
-                        <td class="p-5 text-slate-900 font-bold">${lead.agent_name || 'N/A'}</td>
-                        <td class="p-5 text-slate-600 text-xs">${lead.agent_phone || 'N/A'} | ${lead.agent_email || ''}</td>
-                        <td class="p-5 text-xs text-slate-400 italic">${lead.office_name || 'N/A'}</td>
+                        <td class="p-5 text-slate-900 font-bold">${fullName}</td>
+                        <td class="p-5 text-slate-600 text-xs">
+                            <span class="block text-blue-600 font-medium">${lead.agent_phone || 'No Phone'}</span>
+                            ${lead.agent_email || 'No Email'}
+                        </td>
+                        <td class="p-5 text-xs text-slate-400 italic">${lead.agent_office || 'N/A'}</td>
                     </tr>`;
                 tableBody.innerHTML += row;
             });
         }
 
-        // --- FUNCIÓN PARA DESCARGAR CSV ---
         function downloadCSV() {
             if (currentData.length === 0) {
                 alert("No data available to download.");
                 return;
             }
 
-            // Definimos los encabezados
-            const headers = ['Address', 'Price', 'County', 'Days on Market', 'Agent Name', 'Agent Phone', 'Agent Email', 'Office'];
+            // Encabezados actualizados para el reporte
+            const headers = ['Address', 'City', 'County', 'Price', 'Prop Type', 'Prop Use', 'DOM', 'Agent First', 'Agent Last', 'Phone', 'Email', 'Office'];
             
-            // Mapeamos los datos de Supabase al formato de filas CSV
             const csvRows = [
-                headers.join(','), // Primera fila con encabezados
+                headers.join(','),
                 ...currentData.map(row => [
                     `"${row.address || ''}"`,
-                    row.price,
+                    `"${row.city || ''}"`,
                     `"${row.county || ''}"`,
+                    row.price,
+                    `"${row.property_type || ''}"`,
+                    `"${row.property_use || ''}"`,
                     row.days_on_market,
-                    `"${row.agent_name || ''}"`,
+                    `"${row.agent_first_name || ''}"`,
+                    `"${row.agent_last_name || ''}"`,
                     `"${row.agent_phone || ''}"`,
                     `"${row.agent_email || ''}"`,
-                    `"${row.office_name || ''}"`
+                    `"${row.agent_office || ''}"`
                 ].join(','))
             ];
 
-            const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+            const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csvRows.join("\n");
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Leads_Report_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `Leads_Detailed_Report_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
