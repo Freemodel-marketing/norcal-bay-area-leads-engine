@@ -43,6 +43,7 @@ def fetch_and_store_ids():
         
         if response.status_code == 200:
             raw_data = response.json().get('data', [])
+            print(f"Numero de resultados encontrados: {len(response.json())}")
             
             for prop in raw_data:
                 # 1. Armamos la info básica de la propiedad
