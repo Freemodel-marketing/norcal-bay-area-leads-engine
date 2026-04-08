@@ -4,7 +4,6 @@ import time
 from supabase import create_client, Client
 from utils import *
 
-print("ESTOY VIVO 1")
 # Configuración
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
@@ -15,16 +14,12 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 SEARCH_URL = "https://api.realestateapi.com/v2/PropertySearch"
 DETAIL_URL = "https://api.realestateapi.com/v2/PropertyDetail"
 
-"""counties = [
+counties = [
     "San%20Francisco", "San%20Mateo", "Santa%20Clara", "Santa%20Cruz",
     "Monterey", "Alameda", "Contra%20Costa", "Napa", "Sonoma", "Marin"
-]"""
-
-counties = ["San%20Francisco"]
+]
 
 def fetch_and_store_ids():
-    
-    print("ESTOY VIVO 2")
     
     headers = {
         "accept": "application/json",
@@ -39,7 +34,16 @@ def fetch_and_store_ids():
             "county": county,
             "state": "CA",
             "mls_days_on_market_min": 90,
-            "mls_active": True
+            "mls_active": True,
+            "and": [
+                        {
+                            "or": [
+                                {"property_type": "SFR"},
+                                {"property_type": "MFR"},
+                                {"property_use_code": [366, 364]}
+                            ]
+                        }
+                    ]
         }
 
         print(f"📡 Buscando leads en {county}...")
@@ -49,7 +53,8 @@ def fetch_and_store_ids():
         
         if response.status_code == 200:
             raw_data = response.json().get('data', [])
-            print(f"Numero de resultados encontrados: {len(response.json())}")
+            # Aplicamos filtro de condado antes de procesar detalles
+            valid_data = filter_by_county(raw_data, county)
             
             for prop in raw_data:
                 # 1. Armamos la info básica de la propiedad
@@ -57,7 +62,7 @@ def fetch_and_store_ids():
                 prop_id = prop.get('id')
                 
                 lead = {
-                    "id": prop_id, # Guardado como número real
+                    "id": prop_id,
                     "address": address_info.get('address'),
                     "street": address_info.get('street'),
                     "city": address_info.get('city'),
@@ -65,6 +70,7 @@ def fetch_and_store_ids():
                     "price": prop.get('mlsListingPrice'),
                     "days_on_market": prop.get('mlsDaysOnMarket'),
                     "property_type": prop.get('propertyType'),
+                    "property_use": prop.get('propertyUse'), # Nuevo campo agregado
                     "agent_first_name": "Not Found",
                     "agent_last_name": "Not Found",
                     "agent_email": "Not Found",
@@ -96,13 +102,13 @@ def fetch_and_store_ids():
                             lead["agent_office"] = latest.get("agentOffice")
                     
                     # Pausa pequeña para no saturar la API en el bucle interno
-                    time.sleep(0.5) 
+                    time.sleep(0.6) 
                 except Exception as e:
                     print(f"⚠️ Error enriqueciendo ID {prop_id}: {e}")
 
                 county_leads.append(lead)
 
-            # --- CAMBIO CLAVE: SUBIDA POR CONDADO ---
+            # Subida a Supabase por cada condado terminado
             if county_leads:
                 print(f"🚀 Enviando {len(county_leads)} leads de {county} a Supabase...")
                 supabase.table("leads_ventas").upsert(county_leads).execute()
@@ -114,4 +120,5 @@ def fetch_and_store_ids():
         time.sleep(3) # Pausa entre condados
 
 if __name__ == "__main__":
+    print("🚀 Motor de extracción iniciado...")
     fetch_and_store_ids()
