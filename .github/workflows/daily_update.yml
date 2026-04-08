@@ -28,4 +28,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           RE_API_KEY: ${{ secrets.RE_API_KEY }}
-        run: python Sale_Listings_3_0.py
+        run: -u python Sale_Listings_3_0.py
