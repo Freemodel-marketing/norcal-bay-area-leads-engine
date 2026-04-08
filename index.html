@@ -71,9 +71,10 @@
                         <tr class="table-header text-slate-600 uppercase text-xs font-bold">
                             <th class="p-5">Address</th>
                             <th class="p-5">Price</th>
-                            <th class="p-5">Property Use</th>
-                            <th class="p-5 text-center">Days on Market</th>
-                            <th class="p-5">Listing Agent</th>
+                            <th class="p-5">Prop Type/Use</th>
+                            <th class="p-5 text-center">DOM</th>
+                            <th class="p-5">Agent First Name</th>
+                            <th class="p-5">Agent Last Name</th>
                             <th class="p-5">Contact Details</th>
                             <th class="p-5">Office</th>
                         </tr>
@@ -98,14 +99,13 @@
             const county = document.getElementById('filterCounty').value;
             const search = document.getElementById('searchInput').value;
 
-            tableBody.innerHTML = '<tr><td colspan="7" class="p-20 text-center text-slate-400 font-medium">Fetching fresh leads...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" class="p-20 text-center text-slate-400 font-medium">Fetching fresh leads...</td></tr>';
 
             let query = _supabase.from('leads_ventas').select('*');
             
             if (county) query = query.eq('county', county);
             
             if (search) {
-                // Actualizado para buscar en los nuevos campos de nombre
                 query = query.or(`agent_first_name.ilike.%${search}%,agent_last_name.ilike.%${search}%,address.ilike.%${search}%,agent_office.ilike.%${search}%`);
             }
             
@@ -119,9 +119,6 @@
             tableBody.innerHTML = '';
 
             data.forEach(lead => {
-                // Combinamos nombres para mostrar
-                const fullName = `${lead.agent_first_name || ''} ${lead.agent_last_name || ''}`.trim() || 'N/A';
-                
                 const row = `
                     <tr class="bg-white">
                         <td class="p-5 font-semibold text-slate-800">
@@ -135,10 +132,11 @@
                         </td>
                         <td class="p-5 text-center">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${lead.days_on_market > 30 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">
-                                ${lead.days_on_market || 0} Days
+                                ${lead.days_on_market || 0}
                             </span>
                         </td>
-                        <td class="p-5 text-slate-900 font-bold">${fullName}</td>
+                        <td class="p-5 text-slate-900 font-medium">${lead.agent_first_name || 'N/A'}</td>
+                        <td class="p-5 text-slate-900 font-medium">${lead.agent_last_name || 'N/A'}</td>
                         <td class="p-5 text-slate-600 text-xs">
                             <span class="block text-blue-600 font-medium">${lead.agent_phone || 'No Phone'}</span>
                             ${lead.agent_email || 'No Email'}
@@ -155,7 +153,6 @@
                 return;
             }
 
-            // Encabezados actualizados para el reporte
             const headers = ['Address', 'City', 'County', 'Price', 'Prop Type', 'Prop Use', 'DOM', 'Agent First', 'Agent Last', 'Phone', 'Email', 'Office'];
             
             const csvRows = [
