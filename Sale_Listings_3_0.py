@@ -56,7 +56,7 @@ def fetch_and_store_ids():
             # Aplicamos filtro de condado antes de procesar detalles
             valid_data = filter_by_county(raw_data, county)
             
-            for prop in raw_data:
+            for prop in valid_data:
                 # 1. Armamos la info básica de la propiedad
                 address_info = prop.get('address', {})
                 prop_id = prop.get('id')
