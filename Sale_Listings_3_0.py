@@ -31,8 +31,6 @@ def fetch_and_store_ids():
         "x-api-key": RE_API_KEY
     }
 
-    all_final_leads = [] # Lista maestra para acumular TODO antes de subir
-
     for county in counties:
         payload = {
             "size": 250,
@@ -44,6 +42,8 @@ def fetch_and_store_ids():
 
         print(f"📡 Buscando leads en {county}...")
         response = requests.post(SEARCH_URL, json=payload, headers=headers)
+
+        county_leads = [] # Lista temporal SOLO para este condado
         
         if response.status_code == 200:
             raw_data = response.json().get('data', [])
@@ -98,19 +98,18 @@ def fetch_and_store_ids():
                 except Exception as e:
                     print(f"⚠️ Error enriqueciendo ID {prop_id}: {e}")
 
-                all_final_leads.append(lead)
+                county_leads.append(lead)
+
+            # --- CAMBIO CLAVE: SUBIDA POR CONDADO ---
+            if county_leads:
+                print(f"🚀 Enviando {len(county_leads)} leads de {county} a Supabase...")
+                supabase.table("leads_ventas").upsert(county_leads).execute()
+                print(f"✅ {county} guardado.")
             
         else:
             print(f"❌ Error en {county}: {response.status_code}")
         
         time.sleep(10) # Pausa entre condados
-
-    # 3. SUBIDA FINAL A SUPABASE
-    if all_final_leads:
-        print(f"🚀 Subiendo {len(all_final_leads)} leads COMPLETOS a Supabase...")
-        # Upsert por si el script corre dos veces, no duplicar IDs
-        supabase.table("leads_ventas").upsert(all_final_leads).execute()
-        print("✅ ¡Proceso terminado con éxito!")
 
 if __name__ == "__main__":
     fetch_and_store_ids()
