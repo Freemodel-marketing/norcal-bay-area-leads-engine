@@ -1,73 +1,111 @@
+import os
 import requests
 import time
-import os
 from supabase import create_client, Client
 from utils import *
 
-# 1. Configuración de Supabase (Usa variables de entorno para seguridad)
+# Configuración
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY")
-
-# Validación simple para asegurarnos de que las llaves existen
-if not all([SUPABASE_URL, SUPABASE_KEY, RENTCAST_API_KEY]):
-    raise ValueError("❌ Faltan llaves de API en las variables de entorno.")
-
+RE_API_KEY = "FREEMODEL-d5b5-7d09-bb7e-d641d73198b4" 
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Configuración de búsqueda
-cities = ["Santa%20Clara", "San%20Rafael", "Walnut%20Creek"]
-status = "Active"
-daysOld = "30:90" # Days on market
-offset = 0
+SEARCH_URL = "https://api.realestateapi.com/v2/PropertySearch"
+DETAIL_URL = "https://api.realestateapi.com/v2/PropertyDetail"
 
-def process_listings():
-    for city in cities:
-        url = (
-            f"https://api.rentcast.io/v1/listings/sale?city={city}&state=CA"
-            f"&propertyType=Single%20Family|Condo|Townhouse|Multi-Family"
-            f"&status={status}&daysOld={daysOld}&limit=500&offset={offset}"
-            f"&includeTotalCount=true"
-        )
-        
-        headers = {
-            "accept": "application/json",
-            "X-Api-Key": RENTCAST_API_KEY
+counties = [
+    "San%20Francisco", "San%20Mateo", "Santa%20Clara", "Santa%20Cruz",
+    "Monterey", "Alameda", "Contra%20Costa", "Napa", "Sonoma", "Marin"
+]
+
+def fetch_and_store_ids():
+    headers = {
+        "accept": "application/json",
+        "x-user-id": "UniqueUserIdentifier",
+        "content-type": "application/json",
+        "x-api-key": RE_API_KEY
+    }
+
+    all_final_leads = [] # Lista maestra para acumular TODO antes de subir
+
+    for county in counties:
+        payload = {
+            "size": 250,
+            "county": county,
+            "state": "CA",
+            "mls_days_on_market_min": 90,
+            "mls_active": True
         }
 
-        print(f"📡 Consultando RentCast para {city}...")
-        response = requests.get(url, headers=headers)
-
+        print(f"📡 Buscando leads en {county}...")
+        response = requests.post(SEARCH_URL, json=payload, headers=headers)
+        
         if response.status_code == 200:
-            data = response.json()
-            total_in_db = response.headers.get('X-Total-Count', 'N/A')
+            raw_data = response.json().get('data', [])
             
-            print(f"📊 Registros recibidos: {len(data)}")
-            print(f"📊 Total disponible en RentCast (X-Total-Count): {total_in_db}")
+            for prop in raw_data:
+                # 1. Armamos la info básica de la propiedad
+                address_info = prop.get('address', {})
+                prop_id = prop.get('id')
+                
+                lead = {
+                    "id": prop_id, # Guardado como número real
+                    "address": address_info.get('address'),
+                    "street": address_info.get('street'),
+                    "city": address_info.get('city'),
+                    "county": address_info.get('county'),
+                    "price": prop.get('mlsListingPrice'),
+                    "days_on_market": prop.get('mlsDaysOnMarket'),
+                    "property_type": prop.get('propertyType'),
+                    "agent_first_name": "Not Found",
+                    "agent_last_name": "Not Found",
+                    "agent_email": "Not Found",
+                    "agent_phone": "Not Found",
+                    "agent_office": "Not Found"
+                }
 
-            # --- LLAMADA A FUNCIÓN SEGREGADA (JSON LOCAL) ---
-            # Puedes comentar esta línea cuando ya no necesites el archivo local
-            # save_local_backups(data, status, city)
-
-            # Limpiar y aplanar los datos para Supabase
-            clean_data = map_data_for_supabase(data)
-
-            # --- IMPORTACIÓN A SUPABASE ---
-            if clean_data:
-                print(f"🚀 Subiendo datos de {city} a Supabase...")
-                # Usamos upsert para actualizar si el registro ya existe por ID
+                # 2. Consultamos el DETALLE para obtener al agente inmediatamente
+                print(f"🔍 Enriqueciendo propiedad ID: {prop_id}...")
+                detail_payload = {"comps": False, "id": prop_id}
+                
                 try:
-                    # Ajustamos los datos para que coincidan con tus columnas de Supabase
-                    # Nota: Asegúrate que los nombres de campos en Supabase coincidan con el JSON
-                    supabase.table("leads_ventas").upsert(clean_data).execute()
-                    print(f"✅ ¡Datos de {city} sincronizados con éxito en la nube!")
-                except Exception as e:
-                    print(f"❌ Error al subir datos de {city} a Supabase: {e}")
-        else:
-            print(f"❌ Error API: {response.status_code} - {response.text}") 
+                    detail_res = requests.post(DETAIL_URL, json=detail_payload, headers=headers)
+                    if detail_res.status_code == 200:
+                        detail_data = detail_res.json().get("data", {})
+                        mls_history = detail_data.get("mlsHistory", [])
+                        
+                        if mls_history:
+                            latest = mls_history[0] # El registro más reciente
 
-        time.sleep(5)
+                            raw_agent_name = latest.get("agentName", "")
+                            # Aplicamos nuestra lógica de división
+                            agent_first, agent_last = split_agent_name(raw_agent_name)
+                            
+                            lead["agent_first_name"] = agent_first
+                            lead["agent_last_name"] = agent_last
+                            lead["agent_email"] = latest.get("agentEmail")
+                            lead["agent_phone"] = latest.get("agentPhone")
+                            lead["agent_office"] = latest.get("agentOffice")
+                    
+                    # Pausa pequeña para no saturar la API en el bucle interno
+                    time.sleep(1) 
+                except Exception as e:
+                    print(f"⚠️ Error enriqueciendo ID {prop_id}: {e}")
+
+                all_final_leads.append(lead)
+            
+        else:
+            print(f"❌ Error en {county}: {response.status_code}")
+        
+        time.sleep(10) # Pausa entre condados
+
+    # 3. SUBIDA FINAL A SUPABASE
+    if all_final_leads:
+        print(f"🚀 Subiendo {len(all_final_leads)} leads COMPLETOS a Supabase...")
+        # Upsert por si el script corre dos veces, no duplicar IDs
+        supabase.table("leads_ventas").upsert(all_final_leads).execute()
+        print("✅ ¡Proceso terminado con éxito!")
 
 if __name__ == "__main__":
-    process_listings()
+    fetch_and_store_ids()
