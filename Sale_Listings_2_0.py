@@ -7,7 +7,7 @@ from utils import *
 # Configuración
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-RE_API_KEY = "FREEMODEL-d5b5-7d09-bb7e-d641d73198b4" 
+RE_API_KEY = os.environ.get("RE_API_KEY") 
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
