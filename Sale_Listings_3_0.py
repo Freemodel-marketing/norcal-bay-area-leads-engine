@@ -14,12 +14,12 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 SEARCH_URL = "https://api.realestateapi.com/v2/PropertySearch"
 DETAIL_URL = "https://api.realestateapi.com/v2/PropertyDetail"
 
-"""counties = [
+counties = [
     "San%20Francisco", "San%20Mateo", "Santa%20Clara", "Santa%20Cruz",
     "Monterey", "Alameda", "Contra%20Costa", "Napa", "Sonoma", "Marin"
-]"""
+]
 
-counties = ["San%20Francisco", "San%20Mateo"]
+#counties = ["San%20Francisco", "San%20Mateo"]
 
 def fetch_and_store_ids():
     
@@ -32,12 +32,14 @@ def fetch_and_store_ids():
 
     for county in counties:
         payload = {
-            "size": 50,
+            "size": 100,
             "county": county,
             "state": "CA",
             "mls_days_on_market_min": 90,
             "mls_days_on_market_max": 365,
             "mls_active": True,
+            "mls_listing_price_max": 3500000,
+            "mls_listing_price_min": 500000,
             "and": [
                         {
                             "or": [
