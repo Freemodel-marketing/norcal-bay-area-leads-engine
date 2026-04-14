@@ -39,7 +39,7 @@ def fetch_and_store_ids():
             "mls_listing_price_max": 5000000,
             "mls_listing_price_min": 500000,
             "lot_size_max": 20000,
-            "building_condition": ["Good", "Fair", "Poor", "Unknown"],
+            #"building_condition": ["Good", "Fair", "Poor", "Unknown"],
             "and": [
                         {
                             "or": [
