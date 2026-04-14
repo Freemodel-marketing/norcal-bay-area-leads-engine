@@ -19,8 +19,6 @@ counties = [
     "Monterey", "Alameda", "Contra%20Costa", "Napa", "Sonoma", "Marin"
 ]
 
-#counties = ["San%20Francisco", "San%20Mateo"]
-
 def fetch_and_store_ids():
     
     headers = {
