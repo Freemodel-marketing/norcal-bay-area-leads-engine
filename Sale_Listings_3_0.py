@@ -43,8 +43,7 @@ def fetch_and_store_ids():
             "and": [
                         {
                             "or": [
-                                {"property_type": "SFR"},
-                                {"property_use_code": [364, 366, 369, 388]}
+                                {"property_use_code": [364, 366, 369, 376, 380, 382, 385, 386, 388]}
                             ]
                         }
                     ]
