@@ -42,7 +42,7 @@ def fetch_and_store_ids():
             "mls_pending": False,
             "mls_cancelled": False,
             "mls_sold": False,
-            "year_built_max": 2010
+            "year_built_max": 2010,
             #"building_condition": ["Good", "Fair", "Poor", "Unknown"],
             "and": [
                         {
