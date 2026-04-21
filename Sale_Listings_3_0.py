@@ -44,6 +44,8 @@ def fetch_and_store_ids():
             "mls_sold": False,
             "year_built_max": 2010,
             #"building_condition": ["Good", "Fair", "Poor", "Unknown"],
+            "equity_percent_operator": "lt",
+            "equity_percent": 39,
             "and": [
                         {
                             "or": [
