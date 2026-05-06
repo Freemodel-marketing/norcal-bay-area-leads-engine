@@ -72,7 +72,6 @@ def process_rentcast_results(json_data):
             "price": item.get('price'), # En RentCast es 'price', no 'mlsListingPrice'
             "days_on_market": item.get('daysOnMarket'),
             "property_type": item.get('propertyType'),
-            "property_use": item.get('propertyUse'), # Aprovechamos que RentCast lo da
             "agent_first_name": agent_first if agent_first != "Not Found" else "PENDING",
             "agent_last_name": agent_last if agent_last != "Not Found" else "PENDING",
             "agent_email": item.get('agentEmail') if item.get('agentEmail') else "PENDING",
