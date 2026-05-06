@@ -7,7 +7,7 @@ from utils import *
 # 1. Configuración de Supabase (Usa variables de entorno para seguridad)
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-RENTCAST_API_KEY = os.envoron.get("RENTCAST_API_KEY_GILBERTO")
+RENTCAST_API_KEY = os.environ.get("RENTCAST_API_KEY_GILBERTO")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Configuración de búsqueda
