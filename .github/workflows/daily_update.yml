@@ -27,5 +27,5 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          RE_API_KEY: ${{ secrets.RE_API_KEY }}
-        run: python Sale_Listings_3_0.py
+          RENCATS_API_KEY_GILBERTO: ${{ secrets.RENCAST_API_KEY_GILBERTO }}
+        run: python Sale_Listings_4_0.py
