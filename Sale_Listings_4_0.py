@@ -1,4 +1,5 @@
 import requests
+import os
 import time
 from supabase import create_client, Client
 from utils import *
