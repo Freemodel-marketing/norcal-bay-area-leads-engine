@@ -21,7 +21,7 @@ cities = ["Oakland"]
 status = "Active"
 daysOld = "1:365" # Days on market
 offset = 0
-price = "50000:5000000"
+price = "500000:5000000"
 lotSize = "*:20000"
 propertyType = "Single Family|Condo|Townhouse"
 
