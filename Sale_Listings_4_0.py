@@ -26,7 +26,8 @@ lotSize = "*:20000"
 propertyType = "Single Family|Condo|Townhouse"
 
 def process_listings():
-    for city in cities:
+          pass
+    """for city in cities:
 
         url = f"https://api.rentcast.io/v1/listings/sale?city={city}&state=CA&propertyType={propertyType}&lotSize={lotSize}&status=Active&daysOld={daysOld}&price={price}&limit=500"
         
@@ -50,7 +51,7 @@ def process_listings():
                 supabase.table("leads_ventas").upsert(leads_to_upload).execute()
                 print(f"🚀 {len(leads_to_upload)} leads sincronizados en Supabase.")
 
-        time.sleep(5)
+        time.sleep(5)"""
 
 if __name__ == "__main__":
     process_listings()
