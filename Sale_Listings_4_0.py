@@ -16,7 +16,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
           "Corte%Madera", "Redwood%20City", "San%20Carlos", "Palo%20Alto", "Piedmont", "San%20Bruno"]
 """
 
-cities = ["Oakland"]
+cities = ["San%20Mateo"]
 
 status = "Active"
 daysOld = "1:365" # Days on market
